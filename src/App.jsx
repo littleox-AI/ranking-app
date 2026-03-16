@@ -11,7 +11,7 @@ const REFRESH_INTERVAL = 30000;
 const FIXED_COLS = ["team_id", "team_name", "color_index", "champion_gift"];
 
 const PALETTE = {
-  bg: "#f5f6f8",
+  bg: "#eef2ff",
   card: "#ffffff",
   border: "#d9dde3",
   text: "#1f2937",
@@ -19,6 +19,8 @@ const PALETTE = {
   accent: "#111827",
   soft: "#eef2f7",
   top: "#f9fafb",
+  gold: "#f59e0b",
+  goldSoft: "#fffbeb",
 };
 
 function parseCSV(text) {
@@ -120,12 +122,15 @@ function ActivityDetail({ team }) {
 }
 
 function TeamCard({ team, expanded, onToggle, maxScore, activityCols }) {
+  const isChampion = team.rank === 1;
+
   return (
     <div
       style={{
-        borderRadius: 12,
-        border: `1px solid ${PALETTE.border}`,
+        borderRadius: isChampion ? 16 : 12,
+        border: isChampion ? "1px solid #f4d38f" : `1px solid ${PALETTE.border}`,
         background: PALETTE.card,
+        boxShadow: isChampion ? "0 12px 26px rgba(245, 158, 11, 0.22)" : "0 6px 16px rgba(15, 23, 42, 0.06)",
         marginBottom: 10,
         overflow: "hidden",
       }}
@@ -139,7 +144,7 @@ function TeamCard({ team, expanded, onToggle, maxScore, activityCols }) {
           textAlign: "left",
           gap: 14,
           border: "none",
-          background: "transparent",
+          background: isChampion ? "linear-gradient(120deg, #fff7e6 0%, #ffffff 50%, #fffaf0 100%)" : "transparent",
           padding: "14px 16px",
           cursor: "pointer",
         }}
@@ -149,26 +154,26 @@ function TeamCard({ team, expanded, onToggle, maxScore, activityCols }) {
             width: 38,
             height: 38,
             borderRadius: 8,
-            border: `1px solid ${PALETTE.border}`,
-            background: PALETTE.top,
+            border: isChampion ? "1px solid #f5d799" : `1px solid ${PALETTE.border}`,
+            background: isChampion ? "linear-gradient(135deg, #f59e0b, #facc15)" : PALETTE.top,
             display: "grid",
             placeItems: "center",
             fontWeight: 700,
-            color: PALETTE.text,
+            color: isChampion ? "#78350f" : PALETTE.text,
             flexShrink: 0,
           }}
         >
-          {team.rank}
+          {isChampion ? "👑" : team.rank}
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>{team.name}</div>
+          <div style={{ fontSize: isChampion ? 18 : 16, fontWeight: 800, marginBottom: 6, color: isChampion ? "#7c2d12" : PALETTE.text }}>{team.name}</div>
           <ScoreBar value={team.total} max={maxScore} />
-          <div style={{ marginTop: 6, fontSize: 12, color: PALETTE.subText }}>{activityCols.length} 個活動</div>
+          <div style={{ marginTop: 6, fontSize: 12, color: PALETTE.subText }}>{isChampion ? "冠軍隊伍" : `${activityCols.length} 個活動`}</div>
         </div>
 
         <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <div style={{ fontSize: 24, fontWeight: 800 }}>{displayScore(team.total)}</div>
+          <div style={{ fontSize: isChampion ? 28 : 24, fontWeight: 800, color: isChampion ? "#b45309" : PALETTE.text }}>{displayScore(team.total)}</div>
           <div style={{ fontSize: 12, color: PALETTE.subText }}>總分</div>
         </div>
 
@@ -253,22 +258,36 @@ function ChampionBanner({ champion, gift }) {
   return (
     <div
       style={{
-        background: PALETTE.card,
-        border: `1px solid ${PALETTE.border}`,
-        borderRadius: 12,
-        padding: "16px",
+        background: "linear-gradient(130deg, #fff8e8 0%, #fff 55%, #fff4da 100%)",
+        border: "1px solid #efcc87",
+        borderRadius: 16,
+        boxShadow: "0 14px 28px rgba(245, 158, 11, 0.22)",
+        padding: "18px",
         marginBottom: 18,
       }}
     >
-      <div style={{ fontSize: 12, color: PALETTE.subText, marginBottom: 8 }}>本次冠軍</div>
+      <div style={{ fontSize: 12, color: "#b45309", marginBottom: 8, fontWeight: 700, letterSpacing: "0.08em" }}>CHAMPION</div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 4 }}>🏆 {champion.name}</div>
-          <div style={{ fontSize: 13, color: PALETTE.subText }}>總分：{displayScore(champion.total)}</div>
+          <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 4, color: "#7c2d12" }}>🏆 {champion.name}</div>
+          <div style={{ fontSize: 14, color: "#9a3412", fontWeight: 700 }}>總分：{displayScore(champion.total)}</div>
         </div>
-        <div style={{ border: `1px solid ${PALETTE.border}`, borderRadius: 8, padding: "8px 10px", background: PALETTE.top }}>
-          <div style={{ fontSize: 12, color: PALETTE.subText }}>冠軍禮物</div>
-          <div style={{ fontSize: 14, fontWeight: 700 }}>{gift || "未設定"}</div>
+        <div
+          style={{
+            border: "1px solid #f4c86e",
+            borderRadius: 12,
+            padding: "10px 12px",
+            background: "#fffbeb",
+            minWidth: 200,
+          }}
+        >
+          <div style={{ fontSize: 12, color: "#a16207", marginBottom: 4 }}>冠軍禮物</div>
+          <div style={{ fontSize: 17, fontWeight: 800, color: "#78350f", display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 20 }} aria-hidden="true">
+              🎟️
+            </span>
+            {gift || "未設定"}
+          </div>
         </div>
       </div>
     </div>
@@ -334,7 +353,7 @@ export default function App() {
             <h1 style={{ fontFamily: "Inter, Noto Sans TC, sans-serif", fontSize: "clamp(24px, 5vw, 34px)", fontWeight: 800, color: PALETTE.accent }}>
               即時競賽排行榜
             </h1>
-            <p style={{ fontSize: 14, color: PALETTE.subText, marginTop: 8 }}>簡潔模式：僅顯示冠軍置頂，其餘隊伍依排名呈現</p>
+            <p style={{ fontSize: 14, color: PALETTE.subText, marginTop: 8 }}>#競賽區間：4/1~6/30#</p>
           </div>
 
           <StatusBar lastUpdate={lastUpdate} loading={loading} onRefresh={fetchData} countdown={countdown} />
